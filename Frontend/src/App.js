@@ -46,7 +46,7 @@ function App() {
 
       try {
         // Make sure we're using the full URL with the correct endpoint
-        const response = await axios.get("http://localhost:3002/api/cart", {
+        const response = await axios.get("https://ecommerce-1-zz8i.onrender.com/api/cart", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -71,7 +71,7 @@ function App() {
 
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:3002/api/cart", {
+      const response = await axios.post("https://ecommerce-1-zz8i.onrender.com/api/cart", {
         productId,
         quantity,
       }, {
@@ -92,7 +92,7 @@ function App() {
   const handleRemoveFromCart = async (productId) => {
     setLoading(true);
     try {
-      const response = await axios.delete(`http://localhost:3002/api/cart/${productId}`, {
+      const response = await axios.delete(`https://ecommerce-1-zz8i.onrender.com/api/cart/${productId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -110,7 +110,7 @@ function App() {
   const handleUpdateQuantity = async (productId, newQuantity) => {
     setLoading(true);
     try {
-      const response = await axios.put(`http://localhost:3002/api/cart/${productId}`, {
+      const response = await axios.put(`https://ecommerce-1-zz8i.onrender.com/api/cart/${productId}`, {
         quantity: newQuantity,
       }, {
         headers: {
@@ -197,3 +197,4 @@ function App() {
 }
 
 export default App;
+
