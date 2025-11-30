@@ -35,15 +35,35 @@ const PORT = process.env.PORT || 3002;
 
 // Enhanced CORS configuration
 // CORS setup — read allowed origins from env and apply strict checking
+
+// --- CORS allowed origins (put this near top of server.js) ---
+const rawOrigins = process.NODE_ENV.CORS_ORIGIN || "http://localhost:3000";
+const allowedOrigins = rawOrigins
+  .split(",")
+  .map((s) => s.trim().replace(/\/+$/, "")) // trim and remove trailing slash
+  .filter(Boolean);
+
+console.log("CORS allowed origins:", allowedOrigins);
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.CORS_ORIGIN_PROD
-      : process.env.CORS_ORIGIN_DEV || "http://localhost:3000",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  origin: function (origin, callback) {
+    // allow non-browser requests (Postman/curl) where origin is undefined
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    const msg = `CORS policy: access denied from origin ${origin}`;
+    return callback(new Error(msg), false);
+  },
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+app.use(cors(corsOptions));
+// --------------------------------------------------------------
 
 function generateAccessToken(user) {
   console.log("Generating access token for user:", {
@@ -807,6 +827,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
