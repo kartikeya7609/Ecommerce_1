@@ -31,23 +31,19 @@ for (const envVar of requiredEnvVars) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.NODE_ENV.PORT || 3002;
 
-// Enhanced CORS configuration
-// CORS setup — read allowed origins from env and apply strict checking
-
-// --- CORS allowed origins (put this near top of server.js) ---
 const rawOrigins = process.NODE_ENV.CORS_ORIGIN || "http://localhost:3000";
 const allowedOrigins = rawOrigins
   .split(",")
-  .map((s) => s.trim().replace(/\/+$/, "")) // trim and remove trailing slash
+  .map(s => s.trim().replace(/\/+$/, "")) // trim and remove trailing slashes
   .filter(Boolean);
 
 console.log("CORS allowed origins:", allowedOrigins);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // allow non-browser requests (Postman/curl) where origin is undefined
+    // allow non-browser requests (curl/Postman) where origin is undefined
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
@@ -55,6 +51,7 @@ const corsOptions = {
     }
 
     const msg = `CORS policy: access denied from origin ${origin}`;
+    console.warn(msg);
     return callback(new Error(msg), false);
   },
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
@@ -827,6 +824,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
