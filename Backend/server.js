@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 3002;
 
 // Enhanced CORS configuration
 // CORS setup — read allowed origins from env and apply strict checking
-const rawOrigins = process.env.CORS_ORIGINS || "http://localhost:3000","https://ecommerce-1-lilac.vercel.app";
+const rawOrigins = process.env.CORS_ORIGINS || "http://localhost:3000",
 const allowedOrigins = rawOrigins
   .split(",")
   .map(s => s.trim().replace(/\/+$/, "")) // trim and remove trailing slashes
@@ -821,6 +821,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
