@@ -47,7 +47,7 @@ const UserProfile = ({ user, userId }) => {
       token ? "Token exists" : "No token found"
     );
 
-    fetch(`http://localhost:3002/api/user/${targetUserId}`, {
+    fetch(`https://ecommerce-1-zz8i.onrender.com/api/user/${targetUserId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -269,3 +269,4 @@ const UserProfile = ({ user, userId }) => {
 };
 
 export default UserProfile;
+
