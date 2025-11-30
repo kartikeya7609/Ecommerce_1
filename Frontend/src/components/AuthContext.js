@@ -13,7 +13,7 @@ const AuthContext = createContext();
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:3002";
+axios.defaults.baseURL = "https://ecommerce-1-zz8i.onrender.com";
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(() => {
@@ -229,3 +229,4 @@ export const useAuth = () => {
 };
 
 export default AuthContext;
+
