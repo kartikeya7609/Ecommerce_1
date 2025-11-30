@@ -38,7 +38,7 @@ const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
       ? process.env.CORS_ORIGIN_PROD
-      : process.env.CORS_ORIGIN_DEV || "http://localhost:3000",
+      : process.env.CORS_ORIGIN_DEV || "https://ecommerce-1-lilac.vercel.app/",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -806,3 +806,4 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
