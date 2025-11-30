@@ -35,7 +35,7 @@ const ContactPage = () => {
     setStatus({ type: "", message: "" });
 
     try {
-      const res = await fetch("http://localhost:3002/api/contact", {
+      const res = await fetch("https://ecommerce-1-zz8i.onrender.com/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -214,3 +214,4 @@ const styles = {
 };
 
 export default ContactPage;
+
