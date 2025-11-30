@@ -4,7 +4,7 @@ import { useAuth } from "./AuthContext";
 import "./Products.css"; // Make sure to create this CSS file
 
 const API_URL = "https://fakestoreapi.com/products";
-const BACKEND_API_BASE = "http://localhost:3002/api";
+const BACKEND_API_BASE = "https://ecommerce-1-zz8i.onrender.com/api";
 const BACKEND_CART_API = `${BACKEND_API_BASE}/cart`;
 
 const Products = () => {
@@ -209,3 +209,4 @@ const Products = () => {
 };
 
 export default Products;
+
