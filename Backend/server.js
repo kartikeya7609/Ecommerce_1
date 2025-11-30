@@ -35,29 +35,15 @@ const PORT = process.env.PORT || 3002;
 
 // Enhanced CORS configuration
 // CORS setup — read allowed origins from env and apply strict checking
-const rawOrigins = process.env.CORS_ORIGINS || "http://localhost:3000",
-const allowedOrigins = rawOrigins
-  .split(",")
-  .map(s => s.trim().replace(/\/+$/, "")) // trim and remove trailing slashes
-  .filter(Boolean);
-
-console.log("CORS allowed origins:", allowedOrigins);
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    // allow non-browser requests (no Origin header)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-
-    return callback(new Error("CORS not allowed for this origin: " + origin), false);
-  },
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.CORS_ORIGIN_PROD
+      : process.env.CORS_ORIGIN_DEV || "http://localhost:3000",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-
-app.use(cors(corsOptions));
 
 function generateAccessToken(user) {
   console.log("Generating access token for user:", {
@@ -821,6 +807,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
