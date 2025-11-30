@@ -1,0 +1,37 @@
+:root {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --text-primary: #eaeaea;
+  --text-button: #111;
+  --accent-color: #00f5c3;
+  --border-color: #3a3a3a;
+  --neon-glow: 0 0 10px #00f5c3;
+}
+
+body.light {
+  --bg-primary: #f4f4f4;
+  --bg-secondary: #ffffff;
+  --text-primary: #111;
+  --text-button: #fff;
+  --accent-color: #1e90ff;
+  --border-color: #ddd;
+  --neon-glow: 0 0 10px #1e90ff;
+}
+
+input:focus,
+textarea:focus {
+  box-shadow: 0 0 5px var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px var(--accent-color);
+}
+ .contact-bg {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  background-color: #1e1a1c;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='%23202b45' fill-opacity='1'%3E%3Cpath fill-rule='evenodd' d='M0 0h4v4H0V0zm4 4h4v4H4V4z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: cover;
+  background-position: center;
+} 
