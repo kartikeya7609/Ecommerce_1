@@ -19,7 +19,7 @@ const Cart = () => {
   };
 
   const API_CONFIG = {
-    BASE_URL: "http://localhost:3002",
+    BASE_URL: "https://ecommerce-1-zz8i.onrender.com",
     CART: "/api/cart",
     AUTH: "/api/auth",
     PRODUCTS: "/api/products",
@@ -591,3 +591,4 @@ const componentCss = `
 `;
 
 export default Cart;
+
