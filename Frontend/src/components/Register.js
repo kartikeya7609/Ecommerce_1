@@ -65,7 +65,7 @@ function Register() {
 
     try {
       const response = await axios.post(
-        "https://ecommerce-1-zz8i.onrender.com/api/auth/register",
+        "https://ecommerce-1-zz8i.onrender.com/api/auth/register/",
         {
           name: formData.name,
           email: formData.email,
@@ -205,4 +205,5 @@ function Register() {
 }
 
 export default Register;
+
 
