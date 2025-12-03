@@ -29,23 +29,48 @@ for (const envVar of requiredEnvVars) {
     process.exit(1);
   }
 }
-// 12
-// server.js (or app.js)
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enhanced CORS configuration
+// CORS: dynamic allowlist + proper preflight handling
+const rawOrigins =
+  process.env.NODE_ENV === "production"
+    ? (process.env.CORS_ORIGIN_PROD || "")
+    : (process.env.CORS_ORIGIN_DEV || "http://localhost:3000,https://ecommerce-1-lilac.vercel.app");
+
+const allowedOrigins = rawOrigins
+  .split(",")
+  .map((s) => s.trim().replace(/\/+$/, "").toLowerCase())
+  .filter(Boolean);
+
+console.log("Allowed CORS origins:", allowedOrigins);
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.CORS_ORIGIN_PROD
-      : process.env.CORS_ORIGIN_DEV || "https://ecommerce-1-lilac.vercel.app/",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  origin: (origin, callback) => {
+    // allow non-browser tools (curl/postman) where origin is undefined
+    if (!origin) return callback(null, true);
+
+    const normalized = origin.replace(/\/+$/, "").toLowerCase();
+    if (allowedOrigins.includes(normalized)) {
+      // When credentials: true, the header must be the exact origin (not '*').
+      return callback(null, true);
+    }
+
+    console.warn(`CORS blocked for origin: ${origin}`);
+    return callback(new Error("Not allowed by CORS"), false);
+  },
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
 };
-// --------------------------------------------------------------
-//21
+
+// Apply for all routes and ensure OPTIONS preflight handled
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+// Token helpers
 function generateAccessToken(user) {
   console.log("Generating access token for user:", {
     id: user.id,
@@ -71,7 +96,6 @@ function generateRefreshToken(user) {
 }
 
 // Middlewares
-app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -808,12 +832,3 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
-
-
-
-
-
-
-
-
-
