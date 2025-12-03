@@ -35,15 +35,23 @@ const PORT = process.env.PORT || 5000;
 
 // CORS: dynamic allowlist + proper preflight handling
 // --- CORS (replace any older CORS code with this) ---
+// ---------- CORS (REPLACE your existing CORS block with this) ----------
 const rawOrigins =
   process.env.NODE_ENV === 'production'
     ? (process.env.CORS_ORIGIN_PROD || '')
-    : (process.env.CORS_ORIGIN_DEV || 'https://ecommerce-1-lilac.vercel.app');
+    : (process.env.CORS_ORIGIN_DEV || 'http://localhost:3000,https://ecommerce-1-lilac.vercel.app');
 
-const allowedOrigins = rawOrigins
+// Build allowlist; if env vars are empty, fall back to safe defaults
+let allowedOrigins = rawOrigins
   .split(',')
-  .map((s) => s.trim().replace(/\/+$/, '').toLowerCase())
+  .map(s => s.trim().replace(/\/+$/, '').toLowerCase())
   .filter(Boolean);
+
+// If nothing configured, use dev+vercel defaults so server still responds
+if (allowedOrigins.length === 0) {
+  console.warn('No CORS origins configured; falling back to default origins.');
+  allowedOrigins = ['http://localhost:3000', 'https://ecommerce-1-lilac.vercel.app'];
+}
 
 console.log('Allowed CORS origins:', allowedOrigins);
 
@@ -67,13 +75,14 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-// Use cors middleware application-wide
+// Apply CORS middleware application-wide (this handles OPTIONS preflight)
 app.use(cors(corsOptions));
 
-// Do NOT call app.options() with a function as the first arg.
-// If you want an explicit options handler, use a path string — e.g.:
-app.options('/*', cors(corsOptions)); // ok, note string path '/*'
-
+// IMPORTANT: remove any lines like these from your file if present:
+//   app.options('*', ...)
+//   app.options('/*', ...)
+//   app.options(cors(corsOptions))
+// They are unnecessary and have caused the path-to-regexp errors. Rely on app.use(cors(...)) only.
 // Token helpers
 function generateAccessToken(user) {
   console.log("Generating access token for user:", {
@@ -836,5 +845,6 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
