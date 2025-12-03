@@ -828,6 +828,19 @@ app.use((err, req, res, next) => {
     details: err?.message || String(err),
   });
 });
+app.get("/debug/db/users", (req, res) => {
+  db.all("SELECT * FROM users", (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.get("/debug/db/cart", (req, res) => {
+  db.all("SELECT * FROM cart", (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
 
 // Start server
 app.listen(PORT, () => {
@@ -845,6 +858,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
