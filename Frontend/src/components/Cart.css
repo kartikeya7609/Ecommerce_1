@@ -368,3 +368,75 @@
 .cp-grid, .cp-card, .cp-summary {
   transition: all 180ms ease;
 }
+/* ========= Defensive fixes to remove right-side white space ========= */
+
+/* Reset & box-sizing */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg1, #071124); /* fallback */
+  overflow-x: hidden; /* prevents horizontal scroll / white strip */
+  box-sizing: border-box;
+}
+*, *::before, *::after { box-sizing: inherit; }
+
+/* Ensure wrapper uses your theme background even if class mismatch occurs */
+.cp-root, .cp-deluxe {
+  min-height: 100vh;
+  padding: 2rem;
+  width: 100%;
+  background: linear-gradient(180deg, var(--bg1, #071124), var(--bg2, #0f2a44));
+  color: #eaf6ff;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* Make grid never exceed container width */
+.cp-grid {
+  max-width: 1200px;   /* center content for large screens */
+  margin: 0 auto;      /* remove leftover right space */
+  box-sizing: border-box;
+  width: calc(100% - 2rem); /* respect page padding */
+}
+
+/* Make aside flexible instead of fixed to avoid overflow */
+.cp-grid {
+  grid-template-columns: 1fr 320px;
+  gap: 22px;
+}
+@media (max-width: 1100px) {
+  .cp-grid { grid-template-columns: 1fr 300px; width: calc(100% - 2rem); }
+}
+@media (max-width: 980px) {
+  .cp-grid { grid-template-columns: 1fr; width: 100%; }
+  .cp-aside { position: static; width: 100%; }
+}
+
+/* Prevent images or long text from forcing width */
+.cp-card, .cp-img, img, .cp-meta, .cp-summary {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Avoid using 100vw anywhere — convert to 100% so scrollbars don't add width */
+.full-width, .page-100vw {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* small tweak to ensure sticky aside doesn't overflow */
+.cp-aside { box-sizing: border-box; max-width: 100%; }
+
+/* remove any accidental horizontal margins from cards */
+.cp-list { margin: 0; padding: 0; }
+
+/* Ensure footer/buttons fit */
+.cp-footer-inner { flex-wrap: wrap; gap: 10px; }
+
+/* last resort: hide any horizontal overflow on root elements */
+body > div { overflow-x: hidden; }
+
