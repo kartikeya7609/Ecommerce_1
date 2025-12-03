@@ -29,24 +29,36 @@ for (const envVar of requiredEnvVars) {
     process.exit(1);
   }
 }
+// 12
+// server.js (or app.js)
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
 
 const app = express();
-const PORT = process.NODE_ENV.PORT || 3002;
 
-const rawOrigins = process.NODE_ENV.CORS_ORIGIN || "http://localhost:3000";
+// Use process.env (NOT process.NODE_ENV)
+const PORT = process.env.PORT || 3002;
+
+// Default CORS origins — include your Vercel frontend and localhost for dev
+const rawOrigins =
+  process.env.CORS_ORIGIN ||
+  'http://localhost:3000,https://ecommerce-1-lilac.vercel.app';
+
 const allowedOrigins = rawOrigins
-  .split(",")
-  .map(s => s.trim().replace(/\/+$/, "")) // trim and remove trailing slashes
+  .split(',')
+  .map(s => s.trim().replace(/\/+$/, '').toLowerCase()) // trim, remove trailing slashes, lowercase
   .filter(Boolean);
 
-console.log("CORS allowed origins:", allowedOrigins);
+console.log('CORS allowed origins:', allowedOrigins);
 
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
     // allow non-browser requests (curl/Postman) where origin is undefined
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
+    const normalizedOrigin = origin.replace(/\/+$/, '').toLowerCase();
+    if (allowedOrigins.includes(normalizedOrigin)) {
       return callback(null, true);
     }
 
@@ -54,14 +66,25 @@ const corsOptions = {
     console.warn(msg);
     return callback(new Error(msg), false);
   },
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  credentials: true, // IMPORTANT if you use cookies / HTTP-only cookies
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
-// --------------------------------------------------------------
+app.use(express.json());
 
+// Example route
+app.get('/api/ping', (req, res) => {
+  res.json({ ok: true, from: 'api' });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+// --------------------------------------------------------------
+//21
 function generateAccessToken(user) {
   console.log("Generating access token for user:", {
     id: user.id,
@@ -824,6 +847,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
