@@ -68,7 +68,7 @@ const corsOptions = {
 
 // Apply for all routes and ensure OPTIONS preflight handled
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options( cors(corsOptions));
 
 // Token helpers
 function generateAccessToken(user) {
@@ -832,3 +832,4 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
