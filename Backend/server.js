@@ -34,41 +34,45 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // CORS: dynamic allowlist + proper preflight handling
+// --- CORS (replace any older CORS code with this) ---
 const rawOrigins =
-  process.env.NODE_ENV === "production"
-    ? (process.env.CORS_ORIGIN_PROD || "")
-    : (process.env.CORS_ORIGIN_DEV || "http://localhost:3000,https://ecommerce-1-lilac.vercel.app");
+  process.env.NODE_ENV === 'production'
+    ? (process.env.CORS_ORIGIN_PROD || '')
+    : (process.env.CORS_ORIGIN_DEV || 'https://ecommerce-1-lilac.vercel.app');
 
 const allowedOrigins = rawOrigins
-  .split(",")
-  .map((s) => s.trim().replace(/\/+$/, "").toLowerCase())
+  .split(',')
+  .map((s) => s.trim().replace(/\/+$/, '').toLowerCase())
   .filter(Boolean);
 
-console.log("Allowed CORS origins:", allowedOrigins);
+console.log('Allowed CORS origins:', allowedOrigins);
 
 const corsOptions = {
   origin: (origin, callback) => {
     // allow non-browser tools (curl/postman) where origin is undefined
     if (!origin) return callback(null, true);
 
-    const normalized = origin.replace(/\/+$/, "").toLowerCase();
+    const normalized = origin.replace(/\/+$/, '').toLowerCase();
     if (allowedOrigins.includes(normalized)) {
-      // When credentials: true, the header must be the exact origin (not '*').
+      // when credentials: true, server must echo the specific origin
       return callback(null, true);
     }
 
     console.warn(`CORS blocked for origin: ${origin}`);
-    return callback(new Error("Not allowed by CORS"), false);
+    return callback(new Error('Not allowed by CORS'), false);
   },
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
   credentials: true,
   optionsSuccessStatus: 204,
 };
 
-// Apply for all routes and ensure OPTIONS preflight handled
+// Use cors middleware application-wide
 app.use(cors(corsOptions));
-app.options( cors(corsOptions));
+
+// Do NOT call app.options() with a function as the first arg.
+// If you want an explicit options handler, use a path string — e.g.:
+app.options('/*', cors(corsOptions)); // ok, note string path '/*'
 
 // Token helpers
 function generateAccessToken(user) {
@@ -832,4 +836,5 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
