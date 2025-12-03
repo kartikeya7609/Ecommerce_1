@@ -96,25 +96,33 @@ export const AuthProvider = ({ children }) => {
   }, [setAuthData]);
 
   const refreshLogin = useCallback(async () => {
-    try {
-      const res = await axios.post("/api/auth/refresh");
-      const { accessToken, user } = res.data;
+  try {
+    // send credentials so the server can read the refreshToken cookie
+    const res = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
 
-      if (!accessToken || !user) {
-        throw new Error("Invalid refresh response");
-      }
+    // accept multiple possible keys (server might return `token` or `accessToken`)
+    const accessToken = res?.data?.accessToken ?? res?.data?.token ?? null;
+    const user = res?.data?.user ?? null;
 
-      setAuthData(accessToken, user);
-      return true;
-    } catch (err) {
-      console.error("Refresh failed:", err);
-      if (err.response?.status === 401 || err.response?.status === 500) {
-        clearAuthData();
-      }
-      return false;
+    if (!accessToken || !user) {
+      // include payload to make debugging easier
+      throw new Error(`Invalid refresh response: ${JSON.stringify(res?.data)}`);
     }
-  }, [setAuthData, clearAuthData]);
 
+    setAuthData(accessToken, user);
+    return true;
+  } catch (err) {
+    console.error('Refresh failed:', err);
+
+    const status = err?.response?.status;
+    // treat these statuses as authentication failures and clear stored auth
+    if (status === 401 || status === 403 || status === 500) {
+      clearAuthData();
+    }
+
+    return false;
+  }
+}, [setAuthData, clearAuthData]);
   const login = async (email, password) => {
     try {
       const response = await axios.post(
@@ -229,4 +237,5 @@ export const useAuth = () => {
 };
 
 export default AuthContext;
+
 
