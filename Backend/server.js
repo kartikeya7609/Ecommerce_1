@@ -31,58 +31,19 @@ for (const envVar of requiredEnvVars) {
 }
 // 12
 // server.js (or app.js)
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Use process.env (NOT process.NODE_ENV)
-const PORT = process.env.PORT || 3002;
-
-// Default CORS origins — include your Vercel frontend and localhost for dev
-const rawOrigins =
-  process.env.CORS_ORIGIN ||
-  'http://localhost:3000,https://ecommerce-1-lilac.vercel.app';
-
-const allowedOrigins = rawOrigins
-  .split(',')
-  .map(s => s.trim().replace(/\/+$/, '').toLowerCase()) // trim, remove trailing slashes, lowercase
-  .filter(Boolean);
-
-console.log('CORS allowed origins:', allowedOrigins);
-
+// Enhanced CORS configuration
 const corsOptions = {
-  origin: (origin, callback) => {
-    // allow non-browser requests (curl/Postman) where origin is undefined
-    if (!origin) return callback(null, true);
-
-    const normalizedOrigin = origin.replace(/\/+$/, '').toLowerCase();
-    if (allowedOrigins.includes(normalizedOrigin)) {
-      return callback(null, true);
-    }
-
-    const msg = `CORS policy: access denied from origin ${origin}`;
-    console.warn(msg);
-    return callback(new Error(msg), false);
-  },
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  credentials: true, // IMPORTANT if you use cookies / HTTP-only cookies
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 204,
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.CORS_ORIGIN_PROD
+      : process.env.CORS_ORIGIN_DEV || "https://ecommerce-1-lilac.vercel.app/",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
-
-app.use(cors(corsOptions));
-app.use(express.json());
-
-// Example route
-app.get('/api/ping', (req, res) => {
-  res.json({ ok: true, from: 'api' });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
 // --------------------------------------------------------------
 //21
 function generateAccessToken(user) {
@@ -847,6 +808,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
