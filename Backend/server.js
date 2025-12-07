@@ -841,6 +841,14 @@ app.get("/debug/db/cart", (req, res) => {
     res.json(rows);
   });
 });
+app.get("/api/admin/users", async (req, res) => {
+  try {
+    const users = await db.all("SELECT id, name, email, created_at FROM users");
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching users" });
+  }
+});
 
 // Start server
 app.listen(PORT, () => {
@@ -858,6 +866,7 @@ app.listen(PORT, () => {
   console.log(`- DELETE /api/cart/:id      - Delete single cart item (protected)`);
   console.log(`- DELETE /api/cart          - Clear entire cart (protected)`);
 });
+
 
 
 
